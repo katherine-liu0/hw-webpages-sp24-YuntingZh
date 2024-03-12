@@ -179,11 +179,11 @@ Compare rendering times on a few scenes with moderately complex geometries with 
 	  <tr align="center">
 		<td>
 		  <img src="images/part2/bvh_4ms_keenan_banana.png" align="middle" width="400px"/>
-		  <figcaption>with BVH, took 4ms</figcaption>
+		  <figcaption>with BVH</figcaption>
 		</td>
 		<td>
 		  <img src="images/part2/without_bvh_2458ms_keenan_banana.png" align="middle" width="400px"/>
-		  <figcaption>without BVH, took 2458ms</figcaption>
+		  <figcaption>without BVH</figcaption>
 		</td>
 	  </tr>
 	</table>
@@ -191,7 +191,7 @@ Compare rendering times on a few scenes with moderately complex geometries with 
 <br>
 
 <p>
-    For several scenes with moderately complex geometries, rendering times with BVH acceleration are significantly shorter than without BVH. (4ms vs. 2458 ms) This is because of the effective organization of objects within the scene by the BVH construction algorithm, which reduces the number of intersection tests required and thus enhances rendering efficiency. BVH acceleration decreases the number of objects that need to be checked during the rendering process, making it more efficient and faster.
+    For several scenes with moderately complex geometries, rendering times with BVH acceleration are significantly shorter than without BVH. (0.9s vs. 57.8s) This is because of the effective organization of objects within the scene by the BVH construction algorithm, which reduces the number of intersection tests required and thus enhances rendering efficiency. BVH acceleration decreases the number of objects that need to be checked during the rendering process, making it more efficient and faster.
 </p>
 <br>
 
