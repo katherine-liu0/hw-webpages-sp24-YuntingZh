@@ -244,7 +244,10 @@ You will probably want to use the instructional machines for the above renders i
   Walk through your implementation of the indirect lighting function.
 </h3>
 <p>
-	Indirect lighting function involves techniques of ray tracing and photon mapping. In ray tracing, indirect illumination is calculated by simulating the path of light rays and their interactions with surfaces. Photon mapping estimates indirect illumination by casting photons into the scene. Combining these techniques enables the rendering of high-quality indirect illumination effects, enhancing the realism of the rendered images.
+	We begin by assessing if the ray intersects with any scene geometry using a bounding volume hierarchy (BVH) for efficiency. For rays that intersect, we first add the contribution from light sources hitting the object directly (zero-bounce radiance). Then, depending on the ray's depth and the material properties of the intersected object (whether it's a delta material or not), we add the contribution from the first bounce of indirect light (one-bounce radiance). For subsequent bounces, we use a recursive approach where each bounce's contribution is determined by sampling the BSDF to generate a new direction for the ray, adjusting its depth, and invoking the same function to calculate further indirect contributions. This recursion is controlled by a termination condition based on the ray's depth and a probability determined by Russian Roulette for efficiency (coin_flip(0.7)). The result combines direct lighting with multiple bounces of indirect illumination, capturing the complex interplay of light in the scene for a more realistic rendering.
+
+
+
 
 </p>
 <br>
@@ -289,7 +292,7 @@ You will probably want to use the instructional machines for the above renders i
 </div>
 <br>
 <p>
-    Direct illumination accounts for the light directly from light sources, producing sharp shadows and defining the basic lighting of the scene. In comparison, indirect illumination captures the light that has bounced off surfaces, filling the scene with soft light and revealing details not visible with direct light alone. 
+    Direct illumination accounts for the light directly from light sources, producing sharp shadows and defining the basic lighting of the scene. In comparison, indirect illumination captures the light that has bounced off surfaces. It's more dim but it fills the scene with soft light and reveals details not visible with only direct light. 
 </p>
 <br>
 
