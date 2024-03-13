@@ -87,10 +87,11 @@ These rays are then sent into the scene to check for intersections with objects.
   Explain the triangle intersection algorithm you implemented in your own words.
 </h3>
 <p>
-    The triangle intersection algorithm determines whether a ray intersects with a triangle in the scene. I start by calculating the plane in which the triangle lies using its three vertices. Then, for each ray cast from the camera, check whether the ray intersects with the plane of the triangle.
-If the ray intersects with the plane, the algorithm then checks if the intersection point lies within the boundaries of the triangle. This is achieved by calculating the barycentric coordinates of the intersection point relative to the vertices of the triangle. If the barycentric coordinates meet certain conditions, then the ray intersects with the triangle.
-Once it is determined that the ray intersects with the triangle, the intersection point, surface normal, and other relevant information for shading calculations can be computed.
-
+Edge Vectors and Normal Calculation: We start by calculating two edge vectors of the triangle, using its three vertices. The cross product of these vectors gives us a normal vector to the plane in which the triangle lies.
+<br>Determining Intersection with Plane: Then find if the ray intersects this plane by checking if the ray direction and the normal to the plane are perpendicular. If they are, there is no intersection.
+<br>Barycentric Coordinates: If an intersection is found, use barycentric coordinates to determine if the intersection point lies within the boundaries of the triangle. This involves solving a set of linear equations to find the barycentric coordinates, which indicate the weight each vertex contributes to the intersection point.
+<br>Intersection Point and Normal: Once we confirm the ray intersects within the triangle, the exact point of intersection is computed. The normal at this point is found by interpolating the normals of the triangle's vertices, weighted by the barycentric coordinates.
+<br>Range Check: Finally, we check if the intersection point lies within the valid range of the ray (between min_t and max_t). If it does, the ray is updated with the intersection details.
 </p>
 <br>
 
@@ -110,7 +111,7 @@ Compare rendering times on a few scenes with moderately complex geometries with 
 </h3>
 <p>
 	The Bounding Volume Hierarchy (BVH) construction algorithm has 2 steps: initialization and partitioning. During initialization, objects in the scene are set as leaf nodes. The partitioning step involves choosing a splitting plane using the Surface Area Heuristic (SAH) to minimize the total cost, and then constructing the BVH tree. This process is recursively performed until the end conditions are met, establishing a hierarchy of bounding boxes to improve the efficiency of ray intersection computations.
-	
+	<br>
 	The heuristic chosen for picking the splitting point is the Surface Area Heuristic (SAH) which aims to minimize the total cost of traversing the BVH tree by evaluating the potential costs of different splitting planes. It takes into account the surface area of bounding boxes and the number of primitives (e.g. triangles) in each partition. The goal is to find a balance between the number of primitives in each child node and the likelihood of a ray intersecting the bounding volumes, thereby reducing the number of intersection tests needed during rendering.
 </p>
 
@@ -125,7 +126,7 @@ Compare rendering times on a few scenes with moderately complex geometries with 
 </h3>
 
 <p>
-    For several scenes with moderately complex geometries, rendering times with BVH acceleration are significantly shorter than without BVH. (0.9s vs. 57.8s) This is because of the effective organization of objects within the scene by the BVH construction algorithm, which reduces the number of intersection tests required and thus enhances rendering efficiency. BVH acceleration decreases the number of objects that need to be checked during the rendering process, making it more efficient and faster.
+    For several scenes with moderately complex geometries, rendering times with BVH acceleration are significantly shorter than without BVH. (0.08s vs. 29.42s) This is because of the effective organization of objects within the scene by the BVH construction algorithm, which reduces the number of intersection tests required and thus enhances rendering efficiency. BVH acceleration decreases the number of objects that need to be checked during the rendering process, making it more efficient and faster.
 </p>
 <br>
 
@@ -195,21 +196,21 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
   <table style="width:100%">
     <tr align="center">
       <td>
-        <img src="images/part3/l1_s1_CBspheres_lambertian.png" align="middle" width="200px"/>
+        <img src="images/part3/l1_s1_CBspheres_lambertian.png" align="middle" width="400px"/>
         <figcaption>1 Light Ray (lambertian.dae)</figcaption>
       </td>
       <td>
-        <img src="images/part3/l4_s1_CBspheres_lambertian.png" align="middle" width="200px"/>
+        <img src="images/part3/l4_s1_CBspheres_lambertian.png" align="middle" width="400px"/>
         <figcaption>4 Light Rays (lambertian.dae)</figcaption>
       </td>
     </tr>
     <tr align="center">
       <td>
-        <img src="images/part3/l16_s1_CBspheres_lambertian.png" align="middle" width="200px"/>
+        <img src="images/part3/l16_s1_CBspheres_lambertian.png" align="middle" width="400px"/>
         <figcaption>16 Light Rays (lambertian.dae)</figcaption>
       </td>
       <td>
-        <img src="images/part3/l64_s1_CBspheres_lambertian.png" align="middle" width="200px"/>
+        <img src="images/part3/l64_s1_CBspheres_lambertian.png" align="middle" width="400px"/>
         <figcaption>64 Light Rays (lambertian.dae)</figcaption>
       </td>
     </tr>
@@ -392,8 +393,8 @@ Pick one scene and render it with at least 2048 samples per pixel. Show a good s
 </h3>
 <p>
     Adaptive sampling dynamically adjusts the sampling rate based on the variation in pixel colors across the image. In the process of rendering an image, generally, a higher sampling rate leads to higher image quality but also increases the computational cost and time required for rendering. But with adaptive sampling, where it is understood that not all parts of an image contribute equally to its perceived quality, areas with little color variation can be sampled at a lower rate, while areas with significant color variation—where details and textures are critical—can be sampled more heavily. This strategy helps ensure image quality where it's needed most while minimizing unnecessary computations in less critical areas, thereby improving overall rendering efficiency.
-	we begin with a baseline number of samples per pixel, gradually increasing the count in predetermined batches until reaching the maximum specified samples or the variance within those samples meets our quality threshold. Mathematically, for each pixel, we calculate the mean (μ) and standard deviation (σ) of the accumulated radiance values after each batch of samples. The process leverages the standard deviation to estimate the confidence interval,</p> 
-<img src="images/adaptive_equation.png" align="middle" width="400px"/>
+	<br>we begin with a baseline number of samples per pixel, gradually increasing the count in predetermined batches until reaching the maximum specified samples or the variance within those samples meets our quality threshold. Mathematically, for each pixel, we calculate the mean (μ) and standard deviation (σ) of the accumulated radiance values after each batch of samples. The process leverages the standard deviation to estimate the confidence interval,</p> 
+<img src="images/adaptive_equation.png" align="middle" width="200px"/>
 	<p>where n is the current number of samples. This interval helps us determine the uncertainty in our mean radiance estimate. If I becomes smaller than a set fraction (maxTolerance×μ), indicative of low variance, we deem the pixel sufficiently sampled. 
 </p>
 <br>
