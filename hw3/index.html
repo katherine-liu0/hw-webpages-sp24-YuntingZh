@@ -458,6 +458,9 @@ Pick one scene and render it with at least 2048 samples per pixel. Show a good s
 </h3>
 <p>
     Adaptive sampling dynamically adjusts the sampling rate based on the variation in pixel colors across the image. In the process of rendering an image, generally, a higher sampling rate leads to higher image quality but also increases the computational cost and time required for rendering. But with adaptive sampling, where it is understood that not all parts of an image contribute equally to its perceived quality, areas with little color variation can be sampled at a lower rate, while areas with significant color variation—where details and textures are critical—can be sampled more heavily. This strategy helps ensure image quality where it's needed most while minimizing unnecessary computations in less critical areas, thereby improving overall rendering efficiency.
+	we begin with a baseline number of samples per pixel, gradually increasing the count in predetermined batches until reaching the maximum specified samples or the variance within those samples meets our quality threshold. Mathematically, for each pixel, we calculate the mean (μ) and standard deviation (σ) of the accumulated radiance values after each batch of samples. The process leverages the standard deviation to estimate the confidence interval,</p> 
+<img src="images/adaptive_equation.png" align="middle" width="400px"/>
+	<p>where n is the current number of samples. This interval helps us determine the uncertainty in our mean radiance estimate. If I becomes smaller than a set fraction (maxTolerance×μ), indicative of low variance, we deem the pixel sufficiently sampled. 
 </p>
 <br>
 
