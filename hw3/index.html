@@ -97,33 +97,8 @@ Once it is determined that the ray intersects with the triangle, the intersectio
 <h3>
   Show images with normal shading for a few small .dae files.
 </h3>
-<!-- Example of including multiple figures -->
-<div align="middle">
-  <table style="width:100%">
-    <tr align="center">
-      <td>
-        <img src="images/part1/sky_CBbunny.png" align="middle" width="400px"/>
-        <figcaption>bunny</figcaption>
-      </td>
-      <td>
-        <img src="images/part1/sky_CBempty.png" align="middle" width="400px"/>
-        <figcaption>empty</figcaption>
-      </td>
-    </tr>
-    <tr align="center">
-      <td>
-        <img src="images/part1/sky_CBgems.png" align="middle" width="400px"/>
-        <figcaption>gems</figcaption>
-      </td>
-      <td>
-        <img src="images/part1/sky_CBspheres_lambertian.png" align="middle" width="400px"/>
-        <figcaption>lambertian</figcaption>
-      </td>
-    </tr>
-  </table>
-</div>
+<img src="images/part1/Part1_some_dae.png" align="middle" width="800px"/>
 <br>
-
 
 <h2 align="middle">Part 2: Bounding Volume Hierarchy (20 Points)</h2>
 <!-- Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
@@ -142,53 +117,12 @@ Compare rendering times on a few scenes with moderately complex geometries with 
 <h3>
   Show images with normal shading for a few large .dae files that you can only render with BVH acceleration.
 </h3>
-<!-- Example of including multiple figures -->
-<div align="middle">
-  <table style="width:100%">
-    <tr align="center">
-      <td>
-        <img src="images/part2/keenan_banana.png" align="middle" width="400px"/>
-        <figcaption>banana</figcaption>
-      </td>
-      <td>
-        <img src="images/part2/sky_blob.png" align="middle" width="400px"/>
-        <figcaption>sky blob</figcaption>
-      </td>
-    </tr>
-    <tr align="center">
-      <td>
-        <img src="images/part2/sky_CBlucy_hg.png" align="middle" width="400px"/>
-        <figcaption>lucy</figcaption>
-      </td>
-      <td>
-        <img src="images/part2/sky_wall.png" align="middle" width="400px"/>
-        <figcaption>robot</figcaption>
-      </td>
-    </tr>
-  </table>
-</div>
+<img src="images/part2/Part2.png" align="middle" width="800px"/>
 <br>
 
 <h3>
   Compare rendering times on a few scenes with moderately complex geometries with and without BVH acceleration. Present your results in a one-paragraph analysis.
 </h3>
-
-<br>
-<div align="middle">
-	<table style="width:100%">
-	  <tr align="center">
-		<td>
-		  <img src="images/part2/bvh_4ms_keenan_banana.png" align="middle" width="400px"/>
-		  <figcaption>with BVH</figcaption>
-		</td>
-		<td>
-		  <img src="images/part2/without_bvh_2458ms_keenan_banana.png" align="middle" width="400px"/>
-		  <figcaption>without BVH</figcaption>
-		</td>
-	  </tr>
-	</table>
-  </div>
-<br>
 
 <p>
     For several scenes with moderately complex geometries, rendering times with BVH acceleration are significantly shorter than without BVH. (0.9s vs. 57.8s) This is because of the effective organization of objects within the scene by the BVH construction algorithm, which reduces the number of intersection tests required and thus enhances rendering efficiency. BVH acceleration decreases the number of objects that need to be checked during the rendering process, making it more efficient and faster.
