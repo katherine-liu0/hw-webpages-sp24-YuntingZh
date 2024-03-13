@@ -88,10 +88,10 @@ These rays are then sent into the scene to check for intersections with objects.
 </h3>
 <p>
 Edge Vectors and Normal Calculation: We start by calculating two edge vectors of the triangle, using its three vertices. The cross product of these vectors gives us a normal vector to the plane in which the triangle lies.
-<br>Determining Intersection with Plane: Then find if the ray intersects this plane by checking if the ray direction and the normal to the plane are perpendicular. If they are, there is no intersection.
-<br>Barycentric Coordinates: If an intersection is found, use barycentric coordinates to determine if the intersection point lies within the boundaries of the triangle. This involves solving a set of linear equations to find the barycentric coordinates, which indicate the weight each vertex contributes to the intersection point.
-<br>Intersection Point and Normal: Once we confirm the ray intersects within the triangle, the exact point of intersection is computed. The normal at this point is found by interpolating the normals of the triangle's vertices, weighted by the barycentric coordinates.
-<br>Range Check: Finally, we check if the intersection point lies within the valid range of the ray (between min_t and max_t). If it does, the ray is updated with the intersection details.
+<br><br>Determining Intersection with Plane: Then find if the ray intersects this plane by checking if the ray direction and the normal to the plane are perpendicular. If they are, there is no intersection.
+<br><br>Barycentric Coordinates: If an intersection is found, use barycentric coordinates to determine if the intersection point lies within the boundaries of the triangle. This involves solving a set of linear equations to find the barycentric coordinates, which indicate the weight each vertex contributes to the intersection point.
+<br><br>Intersection Point and Normal: Once we confirm the ray intersects within the triangle, the exact point of intersection is computed. The normal at this point is found by interpolating the normals of the triangle's vertices, weighted by the barycentric coordinates.
+<br><br>Range Check: Finally, we check if the intersection point lies within the valid range of the ray (between min_t and max_t). If it does, the ray is updated with the intersection details.
 </p>
 <br>
 
@@ -140,10 +140,9 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
   Walk through both implementations of the direct lighting function.
 </h3>
 <p>
-    Uniform Hemisphere Sampling involves generating a random direction vector representing a random direction on the hemisphere above the point being shaded. The illumination intensity from this direction is then calculated and multiplied by the material's reflectance to compute the direct lighting. This method is simple and efficient but can introduce estimation errors due to its randomness.
-
-	Light Sampling involves directly sampling from the light source itself, generating sample points related to the light source. This approach is more direct and can more accurately model the illumination from real light sources. The distance and direction from the point to the light source are calculated, along with the light source's intensity and attenuation factor, to compute the direct lighting.
-
+   In our path tracer, uniform hemisphere sampling estimates direct lighting by distributing samples evenly across a hemisphere centered on the surface normal at the intersection point. This approach treats all directions equally, aiming to capture the overall ambient illumination without bias towards specific light sources. Each sample's contribution is weighted by the surface's reflectance properties and the angle between the sample direction and the surface normal, integrating these contributions to approximate the direct lighting. This method, while straightforward and unbiased, may not efficiently capture the contribution from distinct light sources, potentially requiring a higher number of samples for accurate illumination estimation.
+<br><br>
+In comparison, light source (importance) sampling targets the calculation of direct lighting more efficiently by prioritizing samples towards the directions of actual light sources. For each light in the scene, we sample directions based on the light's position and intensity, checking for visibility from the intersection point to avoid shadows. This technique allows for a more accurate and noise-reduced estimation of direct lighting from discrete lights by concentrating sampling efforts where they are most impactful. The calculated contributions from visible lights are then aggregated, offering a precise representation of direct illumination with potentially fewer samples compared to uniform hemisphere sampling.
 </p>
 
 <h3>
