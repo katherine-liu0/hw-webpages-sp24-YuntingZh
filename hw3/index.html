@@ -334,6 +334,10 @@ You will probably want to use the instructional machines for the above renders i
     Adjusting the maximum ray depth parameter influences the illumination effects, shadow details, reflections, refractions, and the balance between rendering speed and quality. Increasing the depth enhances realism by capturing more complex light interactions, but it also increases the computational load and rendering time. 
 </p>
 <br>
+<h3>For CBbunny.dae, render the mth bounce of light with max_ray_depth set to 0, 1, 2, 3, 4, and 5 (the -m flag), and isAccumBounces=false.</h3>
+<img src="images/part4/Part4_noAccum.png" align="middle" width="800px"/>
+<h3>For CBbunny.dae, compare rendered views with max_ray_depth set to 0, 1, 2, 3, 4, and 5(the -m flag). Use 1024 samples per pixel.</h3>
+<img src="images/part4/Part4_Accum.png" align="middle" width="800px"/>
 
 <h3>
   Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
