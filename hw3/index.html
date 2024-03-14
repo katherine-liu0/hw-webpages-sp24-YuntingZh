@@ -121,7 +121,7 @@ Show images with normal shading for a few small .dae files. -->
     <h3>
       Show images with normal shading for a few small .dae files.
     </h3>
-    <img src="images/part1/Part1_some_dae.png" align="middle" width="800px"/>
+    <img src="images/part1/Part1_some_dae.png" align="middle" width="800px" />
     <br>
 
     <h2 align="middle">Part 2: Bounding Volume Hierarchy (20 Points)</h2>
@@ -304,20 +304,16 @@ You will probably want to use the instructional machines for the above renders i
       Walk through your implementation of the indirect lighting function.
     </h3>
     <p>
-      We begin by assessing if the ray intersects with any scene geometry using a bounding volume hierarchy (BVH) for
-      efficiency. For rays that intersect, we first add the contribution from light sources hitting the object directly
-      (zero-bounce radiance). Then, depending on the ray's depth and the material properties of the intersected object
-      (whether it's a delta material or not), we add the contribution from the first bounce of indirect light
-      (one-bounce radiance). For subsequent bounces, we use a recursive approach where each bounce's contribution is
-      determined by sampling the BSDF to generate a new direction for the ray, adjusting its depth, and invoking the
-      same function to calculate further indirect contributions. This recursion is controlled by a termination condition
-      based on the ray's depth and a probability determined by Russian Roulette for efficiency (coin_flip(0.7)). The
-      result combines direct lighting with multiple bounces of indirect illumination, capturing the complex interplay of
-      light in the scene for a more realistic rendering.
 
+      For Task 4, we started by implementing  <code>DiffuseBSDF::sample_f </code>to represent a diffuse material, instead of using <code>*pdf = 1.0 / (2 * PI);</code> we used <code>*pdf = cosTheta / PI</code> to calculate the <code>pdf</code>for sampled direction. Then, we
+      implemented <code>at_least_one_bounce_radiance</code>. We begin by checking if the maximum depth is reached, and if so, return
+      black. Then to ensure that all paths have at least one calculation of direct illumination before reaching the
+      maximum depth, we will return <code>one_bounce_radiance</code> when the recursive depth of the ray reaches <code>max_ray_depth - 1</code>.
 
-
-
+      Then we calculate the sampling direction and the new ray, and use the intersection of this new ray with the scene
+      as a criterion to decide whether to perform a recursive<code>L_out</code> , divided by<code>pdf</code> . Finally, we return the value of
+     <code> L_one + L_out</code>. In the implementation of Russian Roulette, before calculating <code>L_out</code>, we decide whether to track
+      based on<code> cpdf</code>. If we do proceed, the value of<code> L_out</code> is then divided by <code> cpdf</code>to ensure no bias.
     </p>
     <br>
 
@@ -325,7 +321,10 @@ You will probably want to use the instructional machines for the above renders i
       Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
     </h3>
     <img src="images/part4/Part4_some_imgs.png" align="middle" width="800px" />
-
+    <p>
+      We tested out many imgs but only CBspheres_lambertian and CBbunny has BSDF material so all of the others are just
+      black when I run it.
+    </p>
 
     <br>
 
@@ -399,20 +398,24 @@ You will probably want to use the instructional machines for the above renders i
       such as softer shadows, more complex reflections, and subtle color interplays.</p>
     <p><strong>Quality Compared to Rasterization:</strong><br>
       <img src="images/part4/Part4_pathTracing_vs_others.png" align="middle" width="800px" />
-      <figcaption>
-        I found this image from
-        <a href="https://blogs.nvidia.com/blog/direct-indirect-lighting/" target="_blank">NVIDIA's blog will help demonstrate the difference between different method</a>.
+    <figcaption>
+      I found this image from
+      <a href="https://blogs.nvidia.com/blog/direct-indirect-lighting/" target="_blank">NVIDIA's blog will help
+        demonstrate the difference between different method</a>.
     </figcaption>
     <ul>
       <li>Realism: Path tracing with multiple bounces captures light interactions more accurately than rasterization,
-      leading to more photorealistic images.</li>
-      <li>Computational Cost: Each additional bounce increases computational complexity. Rasterization, on the other hand,
+        leading to more photorealistic images.</li>
+      <li>Computational Cost: Each additional bounce increases computational complexity. Rasterization, on the other
+        hand,
         is generally faster but less capable of simulating complex light interactions.</li>
       <li>Shadows and Reflections: Path tracing naturally produces soft shadows and realistic reflections, which are
         challenging to achieve with traditional rasterization without additional techniques.</li>
       <li>Direct vs. Indirect Lighting: Rasterization handles direct lighting well but often requires additional methods
         (like global illumination algorithms) for indirect lighting. Path tracing inherently calculates both, creating a
-        more unified and realistic lighting model.</li></ul></p>
+        more unified and realistic lighting model.</li>
+    </ul>
+    </p>
     <h3>
       For CBbunny.dae, output the Russian Roulette rendering with max_ray_depth set to 0, 1, 2, 3, 4, and 100(the -m
       flag). Use 1024 samples per pixel.
@@ -431,19 +434,25 @@ You will probably want to use the instructional machines for the above renders i
     </h3>
     <img src="images/part4/Part4_compare_different_sample-per-pixel_rates.png" align="middle" width="800px" />
 
-   <p>
-    Our observation:<br>
+    <p>
+      Our observation:<br>
     <ul>
-      <li> Noise Reduction: As the sample rate increases, the noise in the image decreases significantly. This is because more samples allow for a better average calculation of pixel values, leading to smoother gradients and more accurate color representation.</li>
-     
-      <li>Render Time: Higher sample rates significantly increase render times. This is because the path tracer needs to calculate many more light paths for each pixel, which requires more computational power and time.</li>
-      <li>Diminishing Returns: Beyond a certain point, increasing the number of samples per pixel yields diminishing improvements in image quality relative to the increase in render time.
+      <li> Noise Reduction: As the sample rate increases, the noise in the image decreases significantly. This is
+        because more samples allow for a better average calculation of pixel values, leading to smoother gradients and
+        more accurate color representation.</li>
+
+      <li>Render Time: Higher sample rates significantly increase render times. This is because the path tracer needs to
+        calculate many more light paths for each pixel, which requires more computational power and time.</li>
+      <li>Diminishing Returns: Beyond a certain point, increasing the number of samples per pixel yields diminishing
+        improvements in image quality relative to the increase in render time.
       </li>
-      In summary, increasing the samples per pixel in a path tracing render leads to progressively better image quality, with diminishing noise and more accurate and realistic lighting and details. However, this comes at the cost of longer render times, so it's a balance between desired quality and available time/resources.
-      
+      In summary, increasing the samples per pixel in a path tracing render leads to progressively better image quality,
+      with diminishing noise and more accurate and realistic lighting and details. However, this comes at the cost of
+      longer render times, so it's a balance between desired quality and available time/resources.
+
     </ul>
 
-   </p>
+    </p>
     <p>
       Increasing the samples per pixel rate improves the rendering quality by reducing aliasing and noise, but it also
       raises the computational cost and extends the rendering time. Different samples per pixel rates produce noticeable
