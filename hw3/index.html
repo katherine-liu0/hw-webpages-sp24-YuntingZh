@@ -429,7 +429,7 @@ You will probably want to use the instructional machines for the above renders i
       For CBbunny.dae, output the Russian Roulette rendering with max_ray_depth set to 0, 1, 2, 3, 4, and 100(the -m
       flag). Use 1024 samples per pixel.
     </h3>
-    <img src="images/part4/Part4_noAccum.png" align="middle" width="800px" />
+    <img src="images/part4/Part4_Russian_Roulette.png" align="middle" width="800px" />
     <p>
       Adjusting the maximum ray depth parameter influences the illumination effects, shadow details, reflections,
       refractions, and the balance between rendering speed and quality. Increasing the depth enhances realism by
@@ -441,48 +441,21 @@ You will probably want to use the instructional machines for the above renders i
       Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16,
       64, and 1024. Use 4 light rays.
     </h3>
-    <!-- Example of including multiple figures -->
-    <div align="middle">
-      <table style="width:100%">
-        <tr align="center">
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>1 sample per pixel (example1.dae)</figcaption>
-          </td>
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>2 samples per pixel (example1.dae)</figcaption>
-          </td>
-        </tr>
-        <tr align="center">
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>4 samples per pixel (example1.dae)</figcaption>
-          </td>
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>8 samples per pixel (example1.dae)</figcaption>
-          </td>
-        </tr>
-        <tr align="center">
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>16 samples per pixel (example1.dae)</figcaption>
-          </td>
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>64 samples per pixel (example1.dae)</figcaption>
-          </td>
-        </tr>
-        <tr align="center">
-          <td>
-            <img src="images/your_file.png" align="middle" width="400px" />
-            <figcaption>1024 samples per pixel (example1.dae)</figcaption>
-          </td>
-        </tr>
-      </table>
-    </div>
-    <br>
+    <img src="images/part4/Part4_compare_different_sample-per-pixel_rates.png" align="middle" width="800px" />
+
+   <p>
+    Our observation:<br>
+    <ul>
+      <li> Noise Reduction: As the sample rate increases, the noise in the image decreases significantly. This is because more samples allow for a better average calculation of pixel values, leading to smoother gradients and more accurate color representation.</li>
+     
+      <li>Render Time: Higher sample rates significantly increase render times. This is because the path tracer needs to calculate many more light paths for each pixel, which requires more computational power and time.</li>
+      <li>Diminishing Returns: Beyond a certain point, increasing the number of samples per pixel yields diminishing improvements in image quality relative to the increase in render time.
+      </li>
+      In summary, increasing the samples per pixel in a path tracing render leads to progressively better image quality, with diminishing noise and more accurate and realistic lighting and details. However, this comes at the cost of longer render times, so it's a balance between desired quality and available time/resources.
+      
+    </ul>
+
+   </p>
     <p>
       Increasing the samples per pixel rate improves the rendering quality by reducing aliasing and noise, but it also
       raises the computational cost and extends the rendering time. Different samples per pixel rates produce noticeable
