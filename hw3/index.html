@@ -177,6 +177,7 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
       Walk through both implementations of the direct lighting function.
     </h3>
     <p>
+      <strong> Understanding uniform hemisphere sampling v.s. light source (importance) sampling</strong><br><br>
       In our path tracer, uniform hemisphere sampling estimates direct lighting by distributing samples evenly across a
       hemisphere centered on the surface normal at the intersection point. This approach treats all directions equally,
       aiming to capture the overall ambient illumination without bias towards specific light sources. Each sample's
@@ -193,80 +194,48 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
       visible lights are then aggregated, offering a precise representation of direct illumination with potentially
       fewer samples compared to uniform hemisphere sampling.
     </p>
+    <p>
+      <strong> How we implemented Part 3</strong><br><br>
+      In Part 3, we started by modifying <code>DiffuseBSDF::f</code> to return <code>reflectance / PI</code>, and
+      calculating <code>*pdf = 1.0 / (2 * PI)</code> for uniformly sampling from the hemisphere in
+      <code>DiffuseBSDF::sample_f</code>. In Task 2, we implemented <code>PathTracer::zero_bounce_radiance</code>. Here,
+      we check if the object's surface is emissive; if so, we return <code>emission = isect.bsdf->get_emission()</code>.
+      This allows us to render and visualize the light sources in the scene.
+    </p>
+
+    <p>For Hemisphere Sampling, we use the ray and intersection information in a loop that iterates
+      <code>num_samples</code> times. Each sample represents a direction over the hemisphere to check for light
+      contribution. We generate a sample direction and use it to create a new ray from the intersection point. If this
+      new ray intersects with any light source in the scene (<code>bvh->intersect(new_ray, &new_isect)</code>), we
+      calculate the contribution of that light source based on the BSDF and the emission of that light source. The light
+      contribution is adjusted for the probability density function of the sample, which is <code>1.0 / (2 * PI)</code>,
+      and the total light contribution from all samples is averaged and returned.</p>
+
+    <p>For Importance Sampling, we have a light loop that iterates over all the lights in the scene. For each light, we
+      use <code>ns_area_light</code> samples to estimate the lighting. Within this sampling loop, for each sample from
+      each light source, we obtain the sample direction, the <code>pdf</code>, and the distance to the light using the
+      <code>sample_L</code> function. We use <code>EPS_F</code> when updating <code>shadow_ray.max_t</code> to avoid
+      numerical precision issues. The light contribution is calculated when the shadow ray does not intersect any
+      object. Similar to the previous process, we calculate the light contribution for that particular light and then
+      divide it by the <code>pdf</code>. When accumulating the light contributions, we divide by
+      <code>num_samples</code> and return the final value.</p>
+
 
     <h3>
       Show some images rendered with both implementations of the direct lighting function.
     </h3>
-    <!-- Example of including multiple figures -->
-    <div align="middle">
-      <table style="width:100%">
-        <!-- Header -->
-        <tr align="center">
-          <th>
-            <b>Uniform Hemisphere Sampling</b>
-          </th>
-          <th>
-            <b>Light Sampling</b>
-          </th>
-        </tr>
-        <br>
-        <tr align="center">
-          <td>
-            <img src="images/part3/1_Uniform Hemisphere Sampling_sky_CBbunny.png" align="middle" width="400px" />
-            <figcaption>Uniform Hemisphere Sampling, bunny</figcaption>
-          </td>
-          <td>
-            <img src="images/part3/1_Light Sampling_sky_CBbunny.png" align="middle" width="400px" />
-            <figcaption>Light Sampling, bunny</figcaption>
-          </td>
-        </tr>
-        <br>
-        <tr align="center">
-          <td>
-            <img src="images/part3/2_Uniform Hemisphere Sampling_sky_CBspheres_lambertian.png" align="middle"
-              width="400px" />
-            <figcaption>Uniform Hemisphere Sampling, spheres</figcaption>
-          </td>
-          <td>
-            <img src="images/part3/2_Light Sampling_sky_CBspheres_lambertian.png" align="middle" width="400px" />
-            <figcaption>Light Sampling, sphere</figcaption>
-          </td>
-        </tr>
-        <br>
-      </table>
-    </div>
+    <img src="images/part3/Part3_compare_2_direct_lightings.png" align="middle" width="100%" />
+
     <br>
 
     <h3>
       Focus on one particular scene with at least one area light and compare the noise levels in <b>soft shadows</b>
       when rendering with 1, 4, 16, and 64 light rays (the -l flag) and with 1 sample per pixel (the -s flag) using
-      light sampling, <b>not</b> uniform hemisphere sampling.
+      light sampling.
     </h3>
-    <!-- Example of including multiple figures -->
-    <div align="middle">
-      <table style="width:100%">
-        <tr align="center">
-          <td>
-            <img src="images/part3/l1_s1_CBspheres_lambertian.png" align="middle" width="400px" />
-            <figcaption>1 Light Ray (spheres.dae)</figcaption>
-          </td>
-          <td>
-            <img src="images/part3/l4_s1_CBspheres_lambertian.png" align="middle" width="400px" />
-            <figcaption>4 Light Rays (spheres.dae)</figcaption>
-          </td>
-        </tr>
-        <tr align="center">
-          <td>
-            <img src="images/part3/l16_s1_CBspheres_lambertian.png" align="middle" width="400px" />
-            <figcaption>16 Light Rays (spheres.dae)</figcaption>
-          </td>
-          <td>
-            <img src="images/part3/l64_s1_CBspheres_lambertian.png" align="middle" width="400px" />
-            <figcaption>64 Light Rays (spheres.dae)</figcaption>
-          </td>
-        </tr>
-      </table>
-    </div>
+    <img src="images/part3/Part3_compare_noise_level_different_ray.png" align="middle" width="100%" />
+
+
     <p>
       Based on the screenshots, light sampling produces better images compared to uniform hemisphere sampling. In a
       setting involving soft shadows from area lights, light sampling captures the variations in lighting intensity and
@@ -305,15 +274,22 @@ You will probably want to use the instructional machines for the above renders i
     </h3>
     <p>
 
-      For Task 4, we started by implementing  <code>DiffuseBSDF::sample_f </code>to represent a diffuse material, instead of using <code>*pdf = 1.0 / (2 * PI);</code> we used <code>*pdf = cosTheta / PI</code> to calculate the <code>pdf</code>for sampled direction. Then, we
-      implemented <code>at_least_one_bounce_radiance</code>. We begin by checking if the maximum depth is reached, and if so, return
+      For Part 4, we started by implementing <code>DiffuseBSDF::sample_f </code>to represent a diffuse material, instead
+      of using <code>*pdf = 1.0 / (2 * PI);</code> we used <code>*pdf = cosTheta / PI</code> to calculate the
+      <code>pdf</code>for sampled direction. Then, we
+      implemented <code>at_least_one_bounce_radiance</code>. We begin by checking if the maximum depth is reached, and
+      if so, return
       black. Then to ensure that all paths have at least one calculation of direct illumination before reaching the
-      maximum depth, we will return <code>one_bounce_radiance</code> when the recursive depth of the ray reaches <code>max_ray_depth - 1</code>.
+      maximum depth, we will return <code>one_bounce_radiance</code> when the recursive depth of the ray reaches
+      <code>max_ray_depth - 1</code>.
 
       Then we calculate the sampling direction and the new ray, and use the intersection of this new ray with the scene
-      as a criterion to decide whether to perform a recursive<code>L_out</code> , divided by<code>pdf</code> . Finally, we return the value of
-     <code> L_one + L_out</code>. In the implementation of Russian Roulette, before calculating <code>L_out</code>, we decide whether to track
-      based on<code> cpdf</code>. If we do proceed, the value of<code> L_out</code> is then divided by <code> cpdf</code>to ensure no bias.
+      as a criterion to decide whether to perform a recursive<code>L_out</code> , divided by<code>pdf</code> . Finally,
+      we return the value of
+      <code> L_one + L_out</code>. In the implementation of Russian Roulette, before calculating <code>L_out</code>, we
+      decide whether to track
+      based on<code> cpdf</code>. If we do proceed, the value of<code> L_out</code> is then divided by
+      <code> cpdf</code>to ensure no bias.
     </p>
     <br>
 
@@ -393,11 +369,13 @@ You will probably want to use the instructional machines for the above renders i
       2nd Bounce: Introduces the first level of indirect illumination. Light that hits a surface and then reflects onto
       another surface is captured. This bounce starts to fill in the shadows and adds a bit of reflected color and light
       to the scene, but it's still somewhat simplistic.
-      3rd Bounce: Adds another layer of complexity. Light has now interacted with two surfaces before reaching the eye
+      <br>3rd Bounce: Adds another layer of complexity. Light has now interacted with two surfaces before reaching the
+      eye
       or camera. This bounce enhances realism by capturing more nuanced interactions between light and the environment,
-      such as softer shadows, more complex reflections, and subtle color interplays.</p>
+      such as softer shadows, more complex reflections, and subtle color interplays.
+    </p>
     <p><strong>Quality Compared to Rasterization:</strong><br>
-      <img src="images/part4/Part4_pathTracing_vs_others.png" align="middle" width="800px" />
+      <img src="images/part4/Part4_pathTracing_vs_others.png" align="middle" width="500px" />
     <figcaption>
       I found this image from
       <a href="https://blogs.nvidia.com/blog/direct-indirect-lighting/" target="_blank">NVIDIA's blog will help
