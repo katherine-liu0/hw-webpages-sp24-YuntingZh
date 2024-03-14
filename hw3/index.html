@@ -272,23 +272,13 @@ You will probably want to use the instructional machines for the above renders i
 <br>
 
 <h3>
-  Pick one scene and compare rendered views first with only direct illumination, then only indirect illumination. Use 1024 samples per pixel. (You will have to edit PathTracer::at_least_one_bounce_radiance(...) in your code to generate these views.)
+  Pick one scene and compare rendered views first with only direct illumination, then only indirect illumination. Use 1024 samples per pixel. 
 </h3>
-<!-- Example of including multiple figures -->
-<div align="middle">
-  <table style="width:100%">
-    <tr align="center">
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Only direct illumination (bunny.dae)</figcaption>
-      </td>
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Only indirect illumination (spheres.dae)</figcaption>
-      </td>
-    </tr>
-  </table>
-</div>
+<img src="images/part4/Part4_directVSindirect.png" align="middle" width="800px"/>
+<img src="images/part4/Part4_howtoOnlyIndriect.png" align="middle" width="800px"/>
+<p>
+  Through the comparison, we can see the difference between direct and indirect lighting. For the indirect lighting, I modified my function to exclude the zero-bounce radiance and include only at_least_one_bounce_radiance, starting from the second bounce (by removing L_one). Strictly speaking, "only direct illumination" or "only indirect illumination" does not include zero-bounce ambient illumination because it involves a direct path from the light source to the object. However, in practical rendering scenarios, especially in simpler or real-time renderings, ambient light (or a similar concept) is often included alongside direct illumination to provide a baseline level of light in the scene. Just out of curiosity, I also rendered an image up there that includes the zero-bounce radiance with my indirect lighting. It's only 64 samples, but it can demonstrate the idea.</p>
+
 <br>
 <p>
     Direct illumination accounts for the light directly from light sources, producing sharp shadows and defining the basic lighting of the scene. In comparison, indirect illumination captures the light that has bounced off surfaces. It's more dim but it fills the scene with soft light and reveals details not visible with only direct light. 
