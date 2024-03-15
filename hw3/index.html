@@ -85,9 +85,9 @@ Explain the triangle intersection algorithm you implemented in your own words.
 Show images with normal shading for a few small .dae files. -->
 
     <h3>
-      Walk through the ray generation and primitive intersection parts of the rendering pipeline.
+      Explain the ray generation and primitive intersection parts of the rendering pipeline.
     </h3>
-    <p>
+    <p><strong>Overview:</strong><br><br>
       In the rendering pipeline, the process begins with the generation of rays. Rays are projected from the virtual
       camera through each pixel on the image plane. Each ray carries information such as its origin (the camera
       position) and direction (determined by the pixel coordinates).
@@ -97,12 +97,32 @@ Show images with normal shading for a few small .dae files. -->
       corresponding pixel.
 
     </p>
-    <br>
+    <p><strong>What we did:</strong></p>
+    <p>Ray generation is the first step in the ray tracing process. In this phase, rays are created and cast from the
+      viewpoint (camera) into the scene. For each pixel, a ray is generated and projected into the scene. The direction
+      of these rays depends on several factors, including the camera's position, orientation, field of view, and the
+      aspect ratio of the viewport. These rays are used to determine how each pixel of the final image is colored by
+      simulating the interactions of light with objects in the scene.</p>
+    <p>That's what we did in Part 1, Task 1 and 2. In the <code>Camera::generate_ray</code> function, we convert image
+      coordinates (x, y) to camera space using the lerp function, and then we create a ray based on the origin and
+      sensor point position. In the end, we normalized the ray direction and set <code>min_t</code> and
+      <code>max_t</code> (near clipping plane and far clipping plane values). Now, we can use the
+      <code>generate_ray</code> function in <code>PathTracer::raytrace_pixel</code> to actually generate rays, trace
+      them, and calculate the average color to update the pixel!
+    </p>
 
-    <h3>
-      Explain the triangle intersection algorithm you implemented in your own words.
-    </h3>
-    <p>
+    <p>Primitive intersection is the process of determining whether, and where, a ray intersects with objects in the
+      scene. Usually, the scene is composed of geometric primitives (like triangles, spheres, etc.). For each ray, the
+      rendering system performs intersection tests with these primitives to find out if the ray hits any of them. If
+      there's a hit, the exact point of intersection is calculated. This includes details like the distance from the ray
+      origin to the point of intersection and the surface normal at the point of intersection. If a ray doesn't
+      intersect with any object, it might either contribute to the background color or to environmental effects like fog
+      or sky lighting.</p>
+
+    <p>And in Part 1, Task 3 and 4, we tackled Ray-Triangle Intersection and Ray-Sphere Intersection. For the
+      Ray-Triangle Intersection, we used the Möller-Trumbore intersection algorithm. </p>
+    <p><strong> Explain the triangle intersection algorithm:</strong></p>
+    <!-- <p>
       Edge Vectors and Normal Calculation: We start by calculating two edge vectors of the triangle, using its three
       vertices. The cross product of these vectors gives us a normal vector to the plane in which the triangle lies.
       <br><br>Determining Intersection with Plane: Then find if the ray intersects this plane by checking if the ray
@@ -115,9 +135,62 @@ Show images with normal shading for a few small .dae files. -->
       vertices, weighted by the barycentric coordinates.
       <br><br>Range Check: Finally, we check if the intersection point lies within the valid range of the ray (between
       min_t and max_t). If it does, the ray is updated with the intersection details.
-    </p>
-    <br>
+    </p> -->
 
+
+    <p>
+      The Moller-Trumbore ray-triangle intersection algorithm is a streamlined approach for determining if a ray
+      intersects a triangle in 3D space. It leverages barycentric coordinates to optimize the process, bypassing the
+      need to compute the intersection with the plane on which the triangle lies directly. This method is highly
+      efficient for ray tracing applications.
+    </p>
+    <p>
+      In this algorithm, a ray <i>R</i> is represented by <i>R(t) = O + tD</i>, where <i>O</i> is the ray origin,
+      <i>D</i> is the direction, and <i>t</i> is a scalar. The triangle is defined by its vertices <i>P<sub>1</sub></i>,
+      <i>P<sub>2</sub></i>, and <i>P<sub>3</sub></i>. The algorithm solves for <i>t</i>, <i>u</i>, and <i>v</i>
+      (barycentric coordinates) where <i>0 ≤ u, v ≤ 1</i> and <i>u + v ≤ 1</i>, ensuring the intersection point lies
+      within the triangle.
+    </p>
+    <p>
+      How we implements this algorithm as follows:
+    <ul>
+      <li><i>e1</i> and <i>e2</i> are edge vectors of the triangle, computed from <i>P<sub>2</sub> - P<sub>1</sub></i>
+        and <i>P<sub>3</sub> - P<sub>1</sub></i>.</li>
+      <li><i>h</i> is a vector perpendicular to the ray direction <i>D</i> and edge <i>e2</i>, found using the cross
+        product.</li>
+      <li>The dot product of <i>e1</i> and <i>h</i> helps in checking if the ray is parallel to the triangle plane (no
+        intersection).</li>
+      <li><i>f</i> is the inverse of this dot product, playing a critical role in computing the barycentric coordinates
+        <i>u</i> and <i>v</i>.</li>
+      <li><i>u</i> and <i>v</i> are calculated next, and the conditions <i>u &lt; 0.0</i> or <i>u &gt; 1.0</i>, and <i>v
+          &lt; 0.0</i> or <i>u + v &gt; 1.0</i> ensure the intersection point lies within the triangle.</li>
+      <li>Finally, <i>t</i> is computed to find the intersection point along the ray. If <i>t</i> falls within a
+        specific range, it signifies a valid intersection.</li>
+    </ul>
+    </p>
+
+    <br>
+<p><strong> Explain the Sphere-Ray Intersection algorithm:</strong></p>
+<p>
+  To determine if a ray intersects a sphere, a quadratic equation is derived from the geometric definitions of a ray and a sphere. A ray is described by the equation <i>R(t) = O + tD</i>, where <i>O</i> represents the origin, <i>D</i> is the direction, and <i>t</i> is a scalar. A sphere is defined as the set of all points <i>X</i> that satisfy the equation <i>(X - C)<sup>2</sup> = r<sup>2</sup></i>, where <i>C</i> is the center of the sphere, and <i>r</i> is its radius.
+  </p>
+  <p>
+  The intersection points between the ray and the sphere are determined by substituting the ray equation into the sphere equation and solving for <i>t</i>. This process typically results in a quadratic equation of the form <i>at<sup>2</sup> + bt + c = 0</i>. The discriminant of this equation, which is the part under the square root in the quadratic formula, indicates whether there are real roots (representing intersections) and, if so, how many.
+  </p>
+  
+  <p>
+  In task4, our code implements this algorithm in two main functions: <code>has_intersection</code> and <code>intersect</code>. Here's an overview of each:
+  </p>
+  <ul>
+    <li>
+      <b>has_intersection:</b> This function checks if a ray intersects with the sphere. It utilizes the helper function <code>test</code>, which calculates the intersection points (<code>t1</code> and <code>t2</code>). The ray intersects with the sphere if either of these points lies between <code>r.min_t</code> and <code>r.max_t</code>, the minimum and maximum bounds of the ray.
+    </li>
+    <li>
+      <b>intersect:</b> This function not only checks for intersection but also updates intersection data. It calculates the exact intersection point and normal at that point. The intersection point is determined by the formula <code>r.o + t * r.d</code>, where <code>t</code> is the smaller of the two intersection points that fall within the ray's bounds. The normal is calculated by subtracting the sphere's origin from the intersection point and normalizing the resulting vector. The function updates the intersection data structure with this information, along with a reference to the sphere and its Bidirectional Scattering Distribution Function (BSDF).
+    </li>
+  </ul>
+  
+<br>
     <h3>
       Show images with normal shading for a few small .dae files.
     </h3>
@@ -209,7 +282,8 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
       new ray intersects with any light source in the scene (<code>bvh->intersect(new_ray, &new_isect)</code>), we
       calculate the contribution of that light source based on the BSDF and the emission of that light source. The light
       contribution is adjusted for the probability density function of the sample, which is <code>1.0 / (2 * PI)</code>,
-      and the total light contribution from all samples is averaged and returned.</p>
+      and the total light contribution from all samples is averaged and returned.
+    </p>
 
     <p>For Importance Sampling, we have a light loop that iterates over all the lights in the scene. For each light, we
       use <code>ns_area_light</code> samples to estimate the lighting. Within this sampling loop, for each sample from
@@ -218,7 +292,8 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
       numerical precision issues. The light contribution is calculated when the shadow ray does not intersect any
       object. Similar to the previous process, we calculate the light contribution for that particular light and then
       divide it by the <code>pdf</code>. When accumulating the light contributions, we divide by
-      <code>num_samples</code> and return the final value.</p>
+      <code>num_samples</code> and return the final value.
+    </p>
 
 
     <h3>
