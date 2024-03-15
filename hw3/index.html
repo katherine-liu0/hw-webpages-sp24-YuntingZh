@@ -61,7 +61,7 @@
       <tr>
         <td align="middle">
           <img src="images/example_image.png" width="480px" />
-          <figcaption align="middle">Results Caption: my bunny is the bounciest bunny</figcaption>
+          <figcaption align="middle">Results Caption: my bunny is the bounciest bunny ^ ^</figcaption>
       </tr>
     </table>
   </div>
@@ -161,7 +161,8 @@ Show images with normal shading for a few small .dae files. -->
       <li>The dot product of <i>e1</i> and <i>h</i> helps in checking if the ray is parallel to the triangle plane (no
         intersection).</li>
       <li><i>f</i> is the inverse of this dot product, playing a critical role in computing the barycentric coordinates
-        <i>u</i> and <i>v</i>.</li>
+        <i>u</i> and <i>v</i>.
+      </li>
       <li><i>u</i> and <i>v</i> are calculated next, and the conditions <i>u &lt; 0.0</i> or <i>u &gt; 1.0</i>, and <i>v
           &lt; 0.0</i> or <i>u + v &gt; 1.0</i> ensure the intersection point lies within the triangle.</li>
       <li>Finally, <i>t</i> is computed to find the intersection point along the ray. If <i>t</i> falls within a
@@ -170,27 +171,43 @@ Show images with normal shading for a few small .dae files. -->
     </p>
 
     <br>
-<p><strong> Explain the Sphere-Ray Intersection algorithm:</strong></p>
-<p>
-  To determine if a ray intersects a sphere, a quadratic equation is derived from the geometric definitions of a ray and a sphere. A ray is described by the equation <i>R(t) = O + tD</i>, where <i>O</i> represents the origin, <i>D</i> is the direction, and <i>t</i> is a scalar. A sphere is defined as the set of all points <i>X</i> that satisfy the equation <i>(X - C)<sup>2</sup> = r<sup>2</sup></i>, where <i>C</i> is the center of the sphere, and <i>r</i> is its radius.
-  </p>
-  <p>
-  The intersection points between the ray and the sphere are determined by substituting the ray equation into the sphere equation and solving for <i>t</i>. This process typically results in a quadratic equation of the form <i>at<sup>2</sup> + bt + c = 0</i>. The discriminant of this equation, which is the part under the square root in the quadratic formula, indicates whether there are real roots (representing intersections) and, if so, how many.
-  </p>
-  
-  <p>
-  In task4, our code implements this algorithm in two main functions: <code>has_intersection</code> and <code>intersect</code>. Here's an overview of each:
-  </p>
-  <ul>
-    <li>
-      <b>has_intersection:</b> This function checks if a ray intersects with the sphere. It utilizes the helper function <code>test</code>, which calculates the intersection points (<code>t1</code> and <code>t2</code>). The ray intersects with the sphere if either of these points lies between <code>r.min_t</code> and <code>r.max_t</code>, the minimum and maximum bounds of the ray.
-    </li>
-    <li>
-      <b>intersect:</b> This function not only checks for intersection but also updates intersection data. It calculates the exact intersection point and normal at that point. The intersection point is determined by the formula <code>r.o + t * r.d</code>, where <code>t</code> is the smaller of the two intersection points that fall within the ray's bounds. The normal is calculated by subtracting the sphere's origin from the intersection point and normalizing the resulting vector. The function updates the intersection data structure with this information, along with a reference to the sphere and its Bidirectional Scattering Distribution Function (BSDF).
-    </li>
-  </ul>
-  
-<br>
+    <p><strong> Explain the Sphere-Ray Intersection algorithm:</strong></p>
+    <p>
+      To determine if a ray intersects a sphere, a quadratic equation is derived from the geometric definitions of a ray
+      and a sphere. A ray is described by the equation <i>R(t) = O + tD</i>, where <i>O</i> represents the origin,
+      <i>D</i> is the direction, and <i>t</i> is a scalar. A sphere is defined as the set of all points <i>X</i> that
+      satisfy the equation <i>(X - C)<sup>2</sup> = r<sup>2</sup></i>, where <i>C</i> is the center of the sphere, and
+      <i>r</i> is its radius.
+    </p>
+    <p>
+      The intersection points between the ray and the sphere are determined by substituting the ray equation into the
+      sphere equation and solving for <i>t</i>. This process typically results in a quadratic equation of the form
+      <i>at<sup>2</sup> + bt + c = 0</i>. The discriminant of this equation, which is the part under the square root in
+      the quadratic formula, indicates whether there are real roots (representing intersections) and, if so, how many.
+    </p>
+
+    <p>
+      In task4, our code implements this algorithm in two main functions: <code>has_intersection</code> and
+      <code>intersect</code>. Here's an overview of each:
+    </p>
+    <ul>
+      <li>
+        <b>has_intersection:</b> This function checks if a ray intersects with the sphere. It utilizes the helper
+        function <code>test</code>, which calculates the intersection points (<code>t1</code> and <code>t2</code>). The
+        ray intersects with the sphere if either of these points lies between <code>r.min_t</code> and
+        <code>r.max_t</code>, the minimum and maximum bounds of the ray.
+      </li>
+      <li>
+        <b>intersect:</b> This function not only checks for intersection but also updates intersection data. It
+        calculates the exact intersection point and normal at that point. The intersection point is determined by the
+        formula <code>r.o + t * r.d</code>, where <code>t</code> is the smaller of the two intersection points that fall
+        within the ray's bounds. The normal is calculated by subtracting the sphere's origin from the intersection point
+        and normalizing the resulting vector. The function updates the intersection data structure with this
+        information, along with a reference to the sphere and its Bidirectional Scattering Distribution Function (BSDF).
+      </li>
+    </ul>
+
+    <br>
     <h3>
       Show images with normal shading for a few small .dae files.
     </h3>
@@ -198,26 +215,41 @@ Show images with normal shading for a few small .dae files. -->
     <br>
 
     <h2 align="middle">Part 2: Bounding Volume Hierarchy (20 Points)</h2>
-    <!-- Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
-Show images with normal shading for a few large .dae files that you can only render with BVH acceleration.
-Compare rendering times on a few scenes with moderately complex geometries with and without BVH acceleration. Present your results in a one-paragraph analysis. -->
+
+    <h3>Overview:</h3>
+    <p>
+      All the tasks in Part 1 are computationally intensive, especially in complex scenes with a large number of
+      primitives, and they form the core of what makes ray tracing a powerful yet demanding rendering technique.
+      Advanced acceleration structures like BVH (Bounding Volume Hierarchies) or kd-trees are often used to make this
+      process more efficient by reducing the number of necessary intersection tests. In the Part 2 we implement our BVH
+      tree which taking ray intersection complexity from <code>O(n)</code> to <code>O(log(n))</code>.
+    </p>
 
     <h3>
-      Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
+      Explain our BVH construction algorithm. Explain the heuristic chose for picking the splitting point.
     </h3>
     <p>
-      The Bounding Volume Hierarchy (BVH) construction algorithm has 2 steps: initialization and partitioning. During
-      initialization, objects in the scene are set as leaf nodes. The partitioning step involves choosing a splitting
-      plane using the Surface Area Heuristic (SAH) to minimize the total cost, and then constructing the BVH tree. This
-      process is recursively performed until the end conditions are met, establishing a hierarchy of bounding boxes to
-      improve the efficiency of ray intersection computations.
-      <br>
-      The heuristic chosen for picking the splitting point is the Surface Area Heuristic (SAH) which aims to minimize
-      the total cost of traversing the BVH tree by evaluating the potential costs of different splitting planes. It
-      takes into account the surface area of bounding boxes and the number of primitives (e.g. triangles) in each
-      partition. The goal is to find a balance between the number of primitives in each child node and the likelihood of
-      a ray intersecting the bounding volumes, thereby reducing the number of intersection tests needed during
-      rendering.
+      We followed a recursive approach with a specific heuristic for splitting primitives into child nodes when building
+      BVH. We start by calculating the bounding box using <code>bbox.expand((*p)->get_bbox());</code> for the current range
+      of primitives, encompassing all
+      primitives in the current node.
+    </p>
+    <p>
+      If the number of primitives is less than or equal to <code>max_leaf_size</code>, a new leaf <code>BVHNode</code>
+      is created with this bounding box, marking the end of recursion for this path. We then used algorithm that chose the axis along which to split the primitives, based on the largest spatial variation in the
+      primitives' bounding box. We used median split heuristic, where the midpoint of the sorted primitives is chosen as the splitting point.
+      This balances the tree by ensuring roughly equal numbers of primitives in each child node.
+    </p>
+    <p>
+      We kept constructing left and right child nodes recursively by dividing the primitive list into two halves.
+      A new <code>BVHNode</code> is created for the current subdivision, with left and right children assigned from the
+      recursive calls. The bounding box of the current node is updated to include the bounding boxes of both child nodes, completing the
+      construction for this node.
+    </p>
+    <p>
+      By doing so we effectively builds a balanced BVH, optimizing the performance of spatial queries in
+      ray tracing operations. The median split heuristic provides a good balance between the depth of the tree and the
+      number of primitives in each leaf.
     </p>
 
     <h3>
@@ -230,10 +262,12 @@ Compare rendering times on a few scenes with moderately complex geometries with 
       Compare rendering times on a few scenes with moderately complex geometries with and without BVH acceleration.
       Present your results in a one-paragraph analysis.
     </h3>
+    <img src="images/part2/Part2_compareTime.png" align="middle" width="800px" />
+    <img src="images/part2/Part2_compareTime_maxplanck.png" align="middle" width="800px" />
 
     <p>
       For several scenes with moderately complex geometries, rendering times with BVH acceleration are significantly
-      shorter than without BVH. (0.08s vs. 29.42s) This is because of the effective organization of objects within the
+      shorter than without BVH. (for example the cow.dae -> 0.05s vs. 29.42s) This is because of the effective organization of objects within the
       scene by the BVH construction algorithm, which reduces the number of intersection tests required and thus enhances
       rendering efficiency. BVH acceleration decreases the number of objects that need to be checked during the
       rendering process, making it more efficient and faster.
